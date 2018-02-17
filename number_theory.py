@@ -150,23 +150,24 @@ def decode_roman(x: str):
     return result + _rdecode[x[-1]]
 
 
-# Create an array for memoization
-fib_table = [0, 1, 1] + [-1] * 1000
-
-
-# Returns n'th fuibonacci number using table f[]
 def fib(n):
-    if n > len(fib_table):
-        fib_table.extend([-1] * (n - len(fib_table) + 2))
-    if fib_table[n] >= 0:  # If fib(n) is already computed
-        return fib_table[n]
+    if n < 0:
+        return (-1)**(n % 2 + 1) * fib(-n)
+    a = b = 1
+    c = 0
+    x, y = 1, 0
+    while n:
+        if n % 2 == 0:
+            (a, b, c) = (a*a + b*b,
+                         a*b + b*c,
+                         b*b + c*c)
+            n /= 2
+        else:
+            (x, y) = (a*x + b * y,
+                      b*x + c * y)
+            n -= 1
+    return y
 
-    # assert n & 1 == n % 2
-    k = (n+1 if n & 1 else n) // 2
-
-    fib_table[n] = fib(k)**2+fib(k-1)**2 if n & 1 else (2*fib(k-1)+fib(k))*fib(k)
-
-    return fib_table[n]
 
 # ======================================================================================================================
 # Section 2: Binary Search
