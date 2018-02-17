@@ -98,16 +98,6 @@ def convert_radix(digits: list, base_in: int, base_out: int):
             result.insert(0, rem)
     return result
 
-"""
-result = []
-base_out = 2
-num = -51
-while num != 0:
-    num, d = divmod(num, base_out)
-    result.insert(0, d)
-
-print(result)
-"""
 
 def encode_roman(x: int):
     anums = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
