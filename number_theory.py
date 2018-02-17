@@ -64,7 +64,8 @@ def convert_radix(number: list, base_in: int, base_out: int):
     """
     convert a non-negative "number" from radix "base_in" to radix "base_out"
     This function is more general than the built-in int(), hex(), oct()
-    :param number: a list of integers denoting the digits of the input number.
+    ALSO supports negative base (which allows us to represent positive and negative numbers without a sign bit)
+    :param number: a list of integers denoting the digits of the input number; number MUST BE POSITIVE
     For example, 985 is represented as [9, 8, 5]
     :param base_in: the input radix/base
     :param base_out: the output radix/base
@@ -73,11 +74,17 @@ def convert_radix(number: list, base_in: int, base_out: int):
     num = sum(n * base_in ** p for p, n in enumerate(number[::-1]))
     if num == 0:
         return [0]
-    result = []
-    while num != 0:
-        num, d = divmod(num, base_out)
-        result.insert(0, d)
-    return result
+    if base_out >= 2:
+        result = []
+        while num != 0:
+            num, d = divmod(num, base_out)
+            result.insert(0, d)
+        return result
+    elif base_out <= -2:  # negative base
+        result = []
+        # TODO: negative base
+    else:
+        return None
 
 
 def encode_roman(x: int):
@@ -92,14 +99,13 @@ def encode_roman(x: int):
 
 
 def decode_roman(x: str):
-    anums = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
-    rnums = "M CM D CD C XC L XL X IX V IV I".split()
-    total = 0
-    for a, r in zip(anums, rnums):
-        while x.startswith(r):
-            total += a
-            x = x[len(r):]
-    return total
+    _rdecode = dict(zip('MDCLXVI', (1000, 500, 100, 50, 10, 5, 1)))
+
+    result = 0
+    for r, r1 in zip(x, x[1:]):
+        rd, rd1 = _rdecode[r], _rdecode[r1]
+        result += -rd if rd < rd1 else rd
+    return result + _rdecode[x[-1]]
 
 
 # ======================================================================================================================
