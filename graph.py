@@ -190,7 +190,7 @@ print(g.cnntd_cmpt("b"))
 print(g.rec_any_path("a"))
 
 print(g.dfs("b", callback=lambda x: 1))
-
+print(g.bfs("b", "c"))
 
 
 
