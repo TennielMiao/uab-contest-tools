@@ -60,32 +60,54 @@ def modular_inverse(a: int, b: int):
     return alpha % b if d == 1 else None
 
 
-def convert_radix(number: list, base_in: int, base_out: int):
+def convert_radix(digits: list, base_in: int, base_out: int):
     """
-    convert a non-negative "number" from radix "base_in" to radix "base_out"
-    This function is more general than the built-in int(), hex(), oct()
-    ALSO supports negative base (which allows us to represent positive and negative numbers without a sign bit)
-    :param number: a list of integers denoting the digits of the input number; number MUST BE POSITIVE
-    For example, 985 is represented as [9, 8, 5]
-    :param base_in: the input radix/base
-    :param base_out: the output radix/base
-    :return ret: a list of integers denoting the digits
+    convert a non-negative number from radix base_in to radix base_out
+
+    A n-digit input number is represented as [d_{n-1}..., d_4, d_3, d_2, d_1, d_0]
+    The input number is \sum_{i=0}^{n-1}{d_i * base_in^i}
+    We allow d_i<0, d_i=0, di>0 to represent balanced numeral systems;
+    Note that base_in can be negative or positive as long as abs(base_in)>=2
+    Examples of input numbers and output numbers:
+    985 --> [9, 8, 5]
+    -985 --> [-9, -8, -5] (handle this using upper-level list comprehensions, etc.)
+
+
     """
-    num = sum(n * base_in ** p for p, n in enumerate(number[::-1]))
+    num = sum(d * base_in ** p for p, d in enumerate(digits[::-1]))
     if num == 0:
         return [0]
+
     if base_out >= 2:
         result = []
-        while num != 0:
-            num, d = divmod(num, base_out)
-            result.insert(0, d)
+        if num > 0:
+            while num != 0:
+                num, d = divmod(num, base_out)
+                result.insert(0, d)
+        else:  # num < 0
+            num = -num
+            while num != 0:
+                num, d = divmod(num, base_out)
+                result.insert(0, d)
+            result = [-x for x in result]
         return result
+
     elif base_out <= -2:  # negative base
-        result = []
-        # TODO: negative base
+        return
     else:
         return None
 
+
+"""
+result = []
+base_out = 2
+num = -51
+while num != 0:
+    num, d = divmod(num, base_out)
+    result.insert(0, d)
+
+print(result)
+"""
 
 def encode_roman(x: int):
     anums = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
