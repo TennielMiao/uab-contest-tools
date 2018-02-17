@@ -72,31 +72,31 @@ def convert_radix(digits: list, base_in: int, base_out: int):
     985 --> [9, 8, 5]
     -985 --> [-9, -8, -5] (handle this using upper-level list comprehensions, etc.)
 
-
+    This algorithm works for any base with abs(base) >= 2
     """
     num = sum(d * base_in ** p for p, d in enumerate(digits[::-1]))
     if num == 0:
         return [0]
-
+    result = []
     if base_out >= 2:
-        result = []
         if num > 0:
             while num != 0:
-                num, d = divmod(num, base_out)
-                result.insert(0, d)
+                num, rem = divmod(num, base_out)
+                result.insert(0, rem)
         else:  # num < 0
             num = -num
             while num != 0:
-                num, d = divmod(num, base_out)
-                result.insert(0, d)
+                num, rem = divmod(num, base_out)
+                result.insert(0, rem)
             result = [-x for x in result]
-        return result
-
     elif base_out <= -2:  # negative base
-        return
-    else:
-        return None
-
+        while num != 0:
+            num, rem = divmod(num, base_out)
+            if rem < 0:
+                num += 1
+                rem -= base_out
+            result.insert(0, rem)
+    return result
 
 """
 result = []
