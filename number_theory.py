@@ -7,7 +7,9 @@ euclidean algorithm for greatest common divisor (gcd)
 least common multiple (lcm)
 extended euclidean algorithm
 modular inverse
+
 convert radix
+encode and decode roman numerals because... why not?
 
 Section 2: Binary Search
 
@@ -78,19 +80,41 @@ def convert_radix(number: list, base_in: int, base_out: int):
     return result
 
 
+def encode_roman(x: int):
+    anums = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
+    rnums = "M CM D CD C XC L XL X IX V IV I".split()
+
+    ret = []
+    for a, r in zip(anums, rnums):
+        n, x = divmod(x, a)
+        ret.append(r * n)
+    return ''.join(ret)
+
+
+def decode_roman(x: str):
+    anums = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
+    rnums = "M CM D CD C XC L XL X IX V IV I".split()
+    total = 0
+    for a, r in zip(anums, rnums):
+        while x.startswith(r):
+            total += a
+            x = x[len(r):]
+    return total
+
+
 # ======================================================================================================================
 # Section 2: Binary Search
-def bisect(a, x, lo=0, hi=None, comp=lambda e1, e2: e1 < e2):
+def bisect(a, x, lo=0, hi=None, cmp=lambda e1, e2: e1 < e2):
     """
     a simplified and generalized version of python's bisect package: https://docs.python.org/3.6/library/bisect.html
 
     return the index where to insert item x in a list a
     a must be sorted (in ascending order)
     the return value i is such that:
-    1. all e in a[:i] have: comp(e, x)
-    2. all e in a[i:] have: not comp(e, x)
-    if comp is set to <=, the function goes for the rightmost position;
-    if comp is set to <, the function goes for the leftmost position.
+    1. all e in a[:i] have: cmp(e, x)
+    2. all e in a[i:] have: not cmp(e, x)
+    if cmp is set to <=, the function goes for the rightmost position;
+    if cmp is set to <, the function goes for the leftmost position.
     """
     if lo < 0:
         raise ValueError('lo must be non-negative')
@@ -98,7 +122,7 @@ def bisect(a, x, lo=0, hi=None, comp=lambda e1, e2: e1 < e2):
         hi = len(a)
     while lo < hi:
         mid = (lo + hi) // 2
-        if comp(a[mid], x):
+        if cmp(a[mid], x):
             lo = mid + 1
         else:
             hi = mid
