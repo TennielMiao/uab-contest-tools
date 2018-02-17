@@ -1,4 +1,4 @@
-
+from queue import Queue
 
 class Graph(object):
 
@@ -87,7 +87,87 @@ class Graph(object):
                 nbrs_vert = self.edges[vert]
                 to_visit.extend(list(set(nbrs_vert) - visited))
         return list(visited)
-   
+
+
+    def dfs(self, node, discovered=set(), callback=lambda x: []):
+        """
+        Traverses a graph or tree, exploring child nodes before exploring
+        neighbor nodes. To do something with the nodes, a callback can be passed
+        whose output will be returned. Alternatively, add code to make things happen
+        :param node: Node to start from
+        :param discovered: Discovered set to exclude (optional)
+        :param callback: Callback for every node to perform (optional)
+        :return:
+        """
+
+        if node in discovered:
+            return []
+
+
+        # Add node to discovered set
+        discovered.add(node)
+
+        # Create list of results for this subtree
+        result = []
+
+        # Do something with the node
+        result.append(callback(node))
+
+        # Do the same for every child node
+        for child in self.edges[node]:
+            result += self.dfs(child, discovered, callback=callback)
+
+        return result
+
+    def bfs(self, start, target=None):
+        """
+        Traverses a graph with or without a target, exploring neighbor nodes first.
+        When given a target, it construct a path to the target.
+        Code could be added into the while loop to do something with the nodes
+        :param problem: The node to search for
+        :return:
+        """
+
+        # a FIFO open_set
+        open_set = []
+        # an empty set to maintain visited nodes
+        closed_set = set()
+        # a dictionary to maintain meta information (used for path formation)
+        meta = dict()  # key -> (parent state, action to reach child)
+
+        # initialize
+        meta[start] = None
+        open_set.append(start)
+
+        while not len(open_set) == 0:
+
+            parent_state = open_set.pop()
+
+            if parent_state == target:
+                return self.construct_path(parent_state, meta)
+
+            for child in self.edges[parent_state]:
+
+                if child in closed_set:
+                    continue
+
+                if child not in open_set:
+                    meta[child] = parent_state
+                    open_set.insert(0, child)
+
+            closed_set.add(parent_state)
+
+    def construct_path(self, state, meta):
+        action_list = [state]
+
+        while True:
+            state = meta[state]
+            action_list.append(state)
+            if state is None:
+                break
+
+        return action_list[::-1]
+
 
     
         
@@ -103,11 +183,14 @@ g.add_edge('c','e')
 
 
 
-print g.find_path("a","c")
-print g.min_path("a","c")
-print g.all_paths("a","c")
-print g.cnntd_cmpt("b")
-print g.rec_any_path("a")
+print(g.find_path("a","c"))
+print(g.min_path("a","c"))
+print(g.all_paths("a","c"))
+print(g.cnntd_cmpt("b"))
+print(g.rec_any_path("a"))
+
+print(g.dfs("b", callback=lambda x: 1))
+
 
 
 
