@@ -19,6 +19,8 @@ Section 2: Binary Search
 
 Section 3: Prime Numbers
 prime generators: segmented sieve of Eratosthenes; by interval or by index
+primality test can be done using a brute-force sieve
+all factors & all prime factors (plus degree) of a given number (not efficient, but useful)
 
 """
 
@@ -262,9 +264,9 @@ def prime_factorize(x):
 
 
 def all_factors(x):
+    # this might not be the most efficient, but certainly the most intuitive
     p_factors = prime_factorize(x)
     result = [1]
     for p in p_factors:
         result = sum([[num * p ** deg for num in result] for deg in range(p_factors[p] + 1)], [])
     return result
-
