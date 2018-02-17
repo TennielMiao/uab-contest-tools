@@ -106,7 +106,25 @@ def balance_radix(digits, base):
     """
     convert a n-ary number to a balanced n-ary number
     """
-    pass
+    assert base >= 3  # must be positive
+    assert base % 2 == 1  # must be odd (we may generalize this later)
+    result = digits.copy()
+    k = base // 2
+    for i in range(-1, -len(result)-1, -1):
+        if result[i] > k:
+            result[i] -= base
+            try:
+                result[i-1] += 1
+            except IndexError:  # carry to the first digit
+                result.insert(0, 1)
+        elif result[i] < -k:
+            result[i] += base
+            try:
+                result[i-1] -= 1
+            except IndexError: # carry to the first digit
+                result.insert(0, -1)
+    return result
+
 
 
 def encode_roman(x: int):
