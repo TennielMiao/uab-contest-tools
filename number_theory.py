@@ -1,11 +1,15 @@
 """
 UAB Competition Programs
-by Tenniel Miao
+by Tenniel Miao and Richard Wohlbold
 
 Number Theory
+euclidean algorithm for greatest common divisor (gcd)
+least common multiple (lcm)
+extended euclidean
+
 
 Prime Numbers
-4 prime generators: sieve of Eratosthenes, Sieve of Atkin, Sieve of Sundaram, Wheel Factorization
+prime generators: sieve of Eratosthenes, Sieve of Atkin, Sieve of Sundaram, Wheel Factorization
 """
 
 
