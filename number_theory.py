@@ -9,7 +9,10 @@ extended euclidean algorithm
 modular inverse
 
 convert radix
+balance radix (for odd bases)
 encode and decode roman numerals because... why not?
+
+get the nth fibonnaci number
 
 Section 2: Binary Search
 
@@ -126,7 +129,6 @@ def balance_radix(digits, base):
     return result
 
 
-
 def encode_roman(x: int):
     anums = [1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1]
     rnums = "M CM D CD C XC L XL X IX V IV I".split()
@@ -147,6 +149,24 @@ def decode_roman(x: str):
         result += -rd if rd < rd1 else rd
     return result + _rdecode[x[-1]]
 
+
+# Create an array for memoization
+fib_table = [0, 1, 1] + [-1] * 1000
+
+
+# Returns n'th fuibonacci number using table f[]
+def fib(n):
+    if n > len(fib_table):
+        fib_table.extend([-1] * (n - len(fib_table) + 2))
+    if fib_table[n] >= 0:  # If fib(n) is already computed
+        return fib_table[n]
+
+    # assert n & 1 == n % 2
+    k = (n+1 if n & 1 else n) // 2
+
+    fib_table[n] = fib(k)**2+fib(k-1)**2 if n & 1 else (2*fib(k-1)+fib(k))*fib(k)
+
+    return fib_table[n]
 
 # ======================================================================================================================
 # Section 2: Binary Search
