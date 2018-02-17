@@ -46,3 +46,13 @@ def max_consecutive_sum(array):
             max_value = running_sum
     return max_value
 
+
+def greedy_egyptian(x, y):
+    """ Greedy algorithm for expanding Egyptian fractions """
+    denominators = []
+    while True:
+        denominators.append(-(-y//x))  # ceiling division
+        x, y = -y % x, y * (-(-y//x))
+        if x == 0:
+            break
+    return denominators
