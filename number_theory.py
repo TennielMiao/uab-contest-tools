@@ -211,7 +211,7 @@ def sieve_prime_by_interval(beg=2, end=100, table=default_prime_table):
         # need to grow the current prime table
         pos = table[-1] + 1
         while pos < end:
-            print("iteration, current pos: {}".format(pos))
+            # print("iteration, current pos: {}".format(pos))
             len_sift = min(LENGTH_LIMIT, table[-1] ** 2 - pos, end - pos)
             sift = [True] * len_sift
             # sieve the composite numbers
@@ -221,7 +221,7 @@ def sieve_prime_by_interval(beg=2, end=100, table=default_prime_table):
             # append prime numbers to the table
             table.extend([i + pos for i, is_prime in enumerate(sift) if is_prime])
             pos += len_sift
-    return table[bisect(table, beg): bisect(table, end, comp=lambda e1, e2: e1 <= e2)]
+    return table[bisect(table, beg): bisect(table, end, cmp=lambda e1, e2: e1 <= e2)]
 
 
 def sieve_prime_by_index(ibeg=0, iend=20, table=default_prime_table):
@@ -246,4 +246,25 @@ def sieve_prime_by_index(ibeg=0, iend=20, table=default_prime_table):
             table.extend([i + pos for i, is_prime in enumerate(sift) if is_prime])
             pos += len_sift
     return table[ibeg:iend]
+
+
+def prime_factorize(x):
+    factors = {}
+    p_list = sieve_prime_by_interval(end=x+1)
+    for p in p_list:
+        if x % p == 0:
+            factors[p] = 1
+            x //= p
+            while x % p == 0:
+                factors[p] += 1
+                x //= p
+    return factors
+
+
+def all_factors(x):
+    p_factors = prime_factorize(x)
+    result = [1]
+    for p in p_factors:
+        result = sum([[num * p ** deg for num in result] for deg in range(p_factors[p] + 1)], [])
+    return result
 
