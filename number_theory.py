@@ -2,19 +2,24 @@
 UAB Competition Programs
 by Tenniel Miao and Richard Wohlbold
 
-Number Theory
+Section 1: Number Theory
 euclidean algorithm for greatest common divisor (gcd)
 least common multiple (lcm)
-extended euclidean
+extended euclidean algorithm
+modular inverse
+convert radix
+
+Section 2: Binary Search
 
 
-Prime Numbers
-prime generators: sieve of Eratosthenes, Sieve of Atkin, Sieve of Sundaram, Wheel Factorization
+Section 3: Prime Numbers
+prime generators: segmented sieve of Eratosthenes; by interval or by index
+
 """
 
 
 # ======================================================================================================================
-# Elementary Number Theory
+# Section 1: Elementary Number Theory
 def euclidean_gcd(a: int, b: int):
     """
     compute the greatest common divisor of two positive integers, a and b, using the Euclidean algorithm
@@ -34,6 +39,7 @@ def lcm(a: int, b: int):
 def extended_euclidean_gcd(a: int, b: int):
     """
     extended euclidean algorithm, returning the gcd and two bezout coefficients
+    a * alpha + b * beta = 1
     """
     alpha, s, beta, t = 1, 0, 0, 1
     while b > 0:
@@ -52,8 +58,28 @@ def modular_inverse(a: int, b: int):
     return alpha % b if d == 1 else None
 
 
-# bisect, lower_bound
+def convert_radix(number: list, base_in: int, base_out: int):
+    """
+    convert a non-negative "number" from radix "base_in" to radix "base_out"
+    This function is more general than the built-in int(), hex(), oct()
+    :param number: a list of integers denoting the digits of the input number.
+    For example, 985 is represented as [9, 8, 5]
+    :param base_in: the input radix/base
+    :param base_out: the output radix/base
+    :return ret: a list of integers denoting the digits
+    """
+    num = sum(n * base_in ** p for p, n in enumerate(number[::-1]))
+    if num == 0:
+        return [0]
+    result = []
+    while num != 0:
+        num, d = divmod(num, base_out)
+        result.insert(0, d)
+    return result
+
+
 # ======================================================================================================================
+# Section 2: Binary Search
 def bisect(a, x, lo=0, hi=None, comp=lambda e1, e2: e1 < e2):
     """
     a simplified and generalized version of python's bisect package: https://docs.python.org/3.6/library/bisect.html
@@ -80,7 +106,7 @@ def bisect(a, x, lo=0, hi=None, comp=lambda e1, e2: e1 < e2):
 
 
 # ======================================================================================================================
-# Prime Number
+# Section 3: Prime Number
 from math import log
 LENGTH_LIMIT = 10**8
 default_prime_table = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97]
