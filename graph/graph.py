@@ -7,6 +7,7 @@ class Graph(object):
         self.verts = set()
         self.edges = defaultdict(list)
         self.isDigraph = isDigraph
+        self.time = 0 # For bridges
         
     def add_vert(self,v):
         self.verts.add(v)
@@ -89,7 +90,10 @@ class Graph(object):
         return list(visited)
 
 
-    def dfs(self, node, discovered=set(), callback=lambda x: []):
+
+    ########## DEPTH FIRST SEARCH ##########
+
+    def dfs(self, node, discovered=set(), callback=lambda x: x):
         """
         Traverses a graph or tree, exploring child nodes before exploring
         neighbor nodes. To do something with the nodes, a callback can be passed
@@ -119,7 +123,10 @@ class Graph(object):
 
         return result
 
-    def bfs(self, start, target=None):
+
+    ########## BREADTH FIRST SEARCH ##########
+
+    def bfs(self, start, target=None, callback=lambda x: x):
         """
         Traverses a graph with or without a target, exploring neighbor nodes first.
         When given a target, it construct a path to the target.
@@ -139,23 +146,28 @@ class Graph(object):
         meta[start] = None
         open_set.append(start)
 
+        res = []
+
         while not len(open_set) == 0:
 
-            parent_state = open_set.pop()
+            parent = open_set.pop()
 
-            if parent_state == target:
-                return self.construct_path(parent_state, meta)
+            res.append(callback(parent))
 
-            for child in self.edges[parent_state]:
+            if parent == target:
+                return self.construct_path(parent, meta)
+
+            for child in self.edges[parent]:
 
                 if child in closed_set:
                     continue
 
                 if child not in open_set:
-                    meta[child] = parent_state
+                    meta[child] = parent
                     open_set.insert(0, child)
 
-            closed_set.add(parent_state)
+            closed_set.add(parent)
+        return res
 
     def construct_path(self, state, meta):
         action_list = [state]
@@ -169,28 +181,95 @@ class Graph(object):
         return action_list[::-1]
 
 
-    
+    ########## BRIDGE FINDING ##########
+    '''A recursive function that finds and prints bridges
+        using DFS traversal
+        u --> The vertex to be visited next
+        visited[] --> keeps tract of visited vertices
+        disc[] --> Stores discovery times of visited vertices
+        parent[] --> Stores parent vertices in DFS tree'''
+
+    def bridge_util(self, u, visited, parent, low, disc):
+
+        # Count of children in current node
+        children = 0
+
+        # result
+        res = []
+
+        # Mark the current node as visited and print it
+        visited[u] = True
+
+        # Initialize discovery time and low value
+        disc[u] = self.time
+        low[u] = self.time
+        self.time += 1
+
+        # Recur for all the vertices adjacent to this vertex
+        for v in self.edges[u]:
+            # If v is not visited yet, then make it a child of u
+            # in DFS tree and recur for it
+            if visited[v] == False:
+                parent[v] = u
+                children += 1
+                res += self.bridge_util(v, visited, parent, low, disc)
+
+                # Check if the subtree rooted with v has a connection to
+                # one of the ancestors of u
+                low[u] = min(low[u], low[v])
+
+                ''' If the lowest vertex reachable from subtree
+                under v is below u in DFS tree, then u-v is
+                a bridge'''
+                if low[v] > disc[u]:
+                    res.append((u,v))
+
+
+            elif v != parent[u]:  # Update low value of u for parent function calls.
+                low[u] = min(low[u], disc[v])
+        return res
+
+    # DFS based function to find all bridges. It uses recursive
+    # function bridgeUtil()
+    def bridge(self):
+
+        # Mark all the vertices as not visited and Initialize parent and visited,
+        # and ap(articulation point) arrays
+        visited = [False] * len(self.verts)
+        disc = [float("Inf")] * len(self.verts)
+        low = [float("Inf")] * len(self.verts)
+        parent = [-1] * len(self.verts)
+
+        res = []
+
+        # Call the recursive helper function to find bridges
+        # in DFS tree rooted with vertex 'i'
+        for i in range(len(self.verts)):
+            if visited[i] == False:
+                res += self.bridge_util(i, visited, parent, low, disc)
+        return res
         
  
     
-g=Graph()    
-g.add_edge('a','b')
-g.add_edge('b','c')
-g.add_edge('c','d')
-g.add_edge('a','e')
-g.add_edge('d','e')
-g.add_edge('c','e')
+g=Graph()
+
+g.add_edge(1, 0)
+g.add_edge(0, 2)
+g.add_edge(2, 1)
+g.add_edge(0, 3)
+g.add_edge(3, 4)
 
 
+print(g.find_path(1,4))
+print(g.min_path(1,4))
+print(g.all_paths(4,2))
+print(g.cnntd_cmpt(2))
+print(g.rec_any_path(1))
 
-print(g.find_path("a","c"))
-print(g.min_path("a","c"))
-print(g.all_paths("a","c"))
-print(g.cnntd_cmpt("b"))
-print(g.rec_any_path("a"))
+print(g.dfs(2, callback=lambda x: x))
+print(g.bfs(2, callback=lambda x: x))
 
-print(g.dfs("b", callback=lambda x: 1))
-print(g.bfs("b", "c"))
+print(g.bridge())
 
 
 
