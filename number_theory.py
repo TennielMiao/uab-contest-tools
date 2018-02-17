@@ -70,9 +70,12 @@ def convert_radix(digits: list, base_in: int, base_out: int):
     Note that base_in can be negative or positive as long as abs(base_in)>=2
     Examples of input numbers and output numbers:
     985 --> [9, 8, 5]
-    -985 --> [-9, -8, -5] (handle this using upper-level list comprehensions, etc.)
+    -985 --> [-9, -8, -5] (handle this using upper-level list comprehensions, etc. This is different from balanced
+    n-ary, because the all digits are non-positive)
 
     This algorithm works for any base with abs(base) >= 2
+
+    This algorithm can also convert balanced n-ary to n-ary.
     """
     num = sum(d * base_in ** p for p, d in enumerate(digits[::-1]))
     if num == 0:
@@ -97,6 +100,13 @@ def convert_radix(digits: list, base_in: int, base_out: int):
                 rem -= base_out
             result.insert(0, rem)
     return result
+
+
+def balance_radix(digits, base):
+    """
+    convert a n-ary number to a balanced n-ary number
+    """
+    pass
 
 
 def encode_roman(x: int):
